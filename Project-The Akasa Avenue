@@ -1,0 +1,1098 @@
+
+<!DOCTYPE html>
+<!-- saved from url=(0038)http://127.0.0.1:5500/AkasaAvenue.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./The Akasa Avenue_files/css2">
+    <link rel="stylesheet" href="./The Akasa Avenue_files/css2(1)">
+    <script src="./The Akasa Avenue_files/script.js.download" defer=""></script>
+</head>
+
+<body>
+
+    <button class="chatbot-toggler">
+
+    </button>
+    <div class="chatbot">
+        <header>
+            <h2>Chatbot</h2>
+            <span class="close-btn material-symbols-outlined">close</span>
+        </header>
+        <ul class="chatbox">
+            <li class="chat incoming">
+                <span class="material-symbols-outlined">smart_toy</span>
+                <p>Hi there <br>How can I help you today?</p>
+            </li>
+        </ul>
+        <div class="chat-input">
+            <textarea placeholder="Enter a message..." spellcheck="false" required=""></textarea>
+            <span id="send-btn" class="material-symbols-rounded">send</span>
+        </div>
+    </div>
+
+
+    <title>The Akasa Avenue</title>
+    <script>
+        const chatbotToggler = document.querySelector(".chatbot-toggler");
+        const closeBtn = document.querySelector(".close-btn");
+        const chatbox = document.querySelector(".chatbox");
+        const chatInput = document.querySelector(".chat-input textarea");
+        const sendChatBtn = document.querySelector(".chat-input span");
+        let userMessage = null; // Variable to store user's message
+        const inputInitHeight = chatInput.scrollHeight;
+        // API configuration
+        const API_KEY = "PASTE-YOUR-API-KEY"; // Your API key here
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`;
+        const generateResponse = async (chatElement) => {
+            const messageElement = chatElement.querySelector("p");
+            // Define the properties and message for the API request
+            const requestOptions = {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contents: [{
+                        role: "user",
+                        parts: [{ text: userMessage }]
+                    }]
+                }),
+            }
+            // Send POST request to API, get response and set the reponse as paragraph text
+        }
+        const handleChat = () => {
+
+        }
+        chatInput.addEventListener("input", () => {
+            // Adjust the height of the input textarea based on its content
+            chatInput.style.height = `${inputInitHeight}px`;
+            chatInput.style.height = `${chatInput.scrollHeight}px`;
+        });
+        chatInput.addEventListener("keydown", (e) => {
+            // If Enter key is pressed without Shift key and the window 
+            // width is greater than 800px, handle the chat
+            if (e.key === "Enter" && !e.shiftKey && window.innerWidth > 800) {
+                e.preventDefault();
+                handleChat();
+            }
+        });
+        sendChatBtn.addEventListener("click", handleChat);
+        closeBtn.addEventListener("click", () => document.body.classList.remove("show-chatbot"));
+        chatbotToggler.addEventListener("click", () => document.body.classList.toggle("show-chatbot"));
+        function chatbotResponse(userInput) {
+            const responses = {
+                "hi": "hello",
+                "hello": "Hi there! How can I help you?",
+                "how are you": "I'm just a bot, but I'm doing fine. How can I assist you?",
+                "bye": "Goodbye! Have a great day!",
+                "help": "Sure! Let me know what you need help with."
+            };
+
+            userInput = userInput.toLowerCase();
+            for (const key in responses) {
+                if (userInput.includes(key)) {
+                    return responses[key];
+                }
+            }
+            return "I'm sorry, I don't understand that. Can you try asking something else?";
+        }
+
+        function sendMessage() {
+            const userInput = document.getElementById("userInput").value;
+            const responseBox = document.getElementById("responseBox");
+
+            const response = chatbotResponse(userInput);
+            responseBox.innerText = "Bot: " + response;
+
+            // Clear the input box after sending a message
+            document.getElementById("userInput").value = "";
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+            const productGrid = document.getElementById('product-grid');
+
+            // Fetch and display products
+            fetch('http://localhost:5000/api/products')
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Check if data is logged
+                    productGrid.innerHTML = ''; // Clear placeholder
+                    data.forEach(product => {
+                        const card = document.createElement('div');
+                        card.classList.add('product-card');
+
+                        card.innerHTML = `
+                <h3>${product.name}</h3>
+                <p>Price: Rs.${product.price}</p>
+            `;
+                        productGrid.appendChild(card);
+                    });
+                })
+
+
+            // Form submission handling
+            document.querySelector('.btn-submit').addEventListener('click', (e) => {
+                e.preventDefault();
+                const name = document.getElementById('name').value.trim();
+                const items = document.getElementById('items').value.trim();
+                const gross = parseFloat(document.getElementById('gross').value.trim());
+                const discount = parseFloat(document.getElementById('discount').value.trim());
+                const purchased = document.getElementById('purchased').checked;
+
+                if (!name || !items || isNaN(gross) || isNaN(discount)) {
+                    alert('Please fill in all the fields with valid data.');
+                    return;
+                }
+                const productGrid = document.getElementById('product-grid');
+                const netAmount = gross - discount;
+
+                alert(`Customer Name: ${name}\nItems: ${items}\nGross Amount: Rs.${gross}\nDiscount: Rs.${discount}\nNet Amount: Rs.${netAmount}\nPurchased: ${purchased ? 'Yes' : 'No'}`);
+
+                const card = document.createElement('div');
+                card.classList.add('product-card');
+                card.innerHTML = `
+                    <h3>${items}</h3>
+                    <p>Net Amount: Rs.${netAmount}</p>
+                `;
+                productGrid.appendChild(card);
+
+                document.getElementById('name').value = '';
+                document.getElementById('items').value = '';
+                document.getElementById('gross').value = '';
+                document.getElementById('discount').value = '';
+                document.getElementById('purchased').checked = false;
+            });
+
+
+            // Burger menu toggle
+            const burger = document.querySelector('.burger');
+            const navbar = document.querySelector('.navbar ul');
+            burger.addEventListener('click', () => {
+                navbar.classList.toggle('active');
+            });
+        });
+        // Function to add a card
+        function addCard(name, price) {
+            // Find the container to which the card will be added
+            const productGrid = document.getElementById('product-grid');
+
+            // Create the card element
+            const card = document.createElement('div');
+            card.classList.add('product-card');
+
+            // Set the inner HTML of the card
+            card.innerHTML = `
+        <h3>${name}</h3>
+        <p>Price: Rs.${price}</p>
+    `;
+
+            // Append the card to the product grid
+            productGrid.appendChild(card);
+        }
+        document.getElementById("chatbot-icon").addEventListener("click", () => {
+            alert("Chatbot opened! Here you can integrate chatbot functionality.");
+            // Integrate chatbot logic here, e.g., open a modal or iframe for the chatbot.
+        });
+        // script.js
+        document.querySelector('.call-button').addEventListener('click', function (event) {
+            const confirmCall = confirm('Do you want to call this number?');
+            if (!confirmCall) {
+                event.preventDefault();
+            }
+        });
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #E3F2FD;
+        }
+
+        body.show-chatbot .chatbot-toggler span:last-child {
+            opacity: 1;
+        }
+
+        .chatbot {
+            position: fixed;
+            right: 35px;
+            bottom: 90px;
+            width: 420px;
+            background: #fff;
+            border-radius: 15px;
+            overflow: hidden;
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.5);
+            transform-origin: bottom right;
+            box-shadow: 0 0 128px 0 rgba(0, 0, 0, 0.1),
+                0 32px 64px -48px rgba(0, 0, 0, 0.5);
+            transition: all 0.1s ease;
+        }
+
+        body.show-chatbot .chatbot {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1);
+        }
+
+        .chatbot header {
+            padding: 16px 0;
+            position: relative;
+            text-align: center;
+            color: #fff;
+            background: #724ae8;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .chatbot header span {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            display: none;
+            cursor: pointer;
+            transform: translateY(-50%);
+        }
+
+        header h2 {
+            font-size: 1.4rem;
+        }
+
+        .chatbot .chatbox {
+            overflow-y: auto;
+            height: 510px;
+            padding: 30px 20px 100px;
+        }
+
+        .chatbot :where(.chatbox, textarea)::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-track {
+            background: #fff;
+            border-radius: 25px;
+        }
+
+        .chatbot :where(.chatbox, textarea)::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 25px;
+        }
+
+        .chatbox .chat {
+            display: flex;
+            list-style: none;
+        }
+
+        .chatbox .outgoing {
+            margin: 20px 0;
+            justify-content: flex-end;
+        }
+
+        .chatbox .incoming span {
+            width: 32px;
+            height: 32px;
+            color: #fff;
+            cursor: default;
+            text-align: center;
+            line-height: 32px;
+            align-self: flex-end;
+            background: #724ae8;
+            border-radius: 4px;
+            margin: 0 10px 7px 0;
+        }
+
+        .chatbox .chat p {
+            white-space: pre-wrap;
+            padding: 12px 16px;
+            border-radius: 10px 10px 0 10px;
+            max-width: 75%;
+            color: #fff;
+            font-size: 0.95rem;
+            background: #724ae8;
+        }
+
+        .chatbox .incoming p {
+            border-radius: 10px 10px 10px 0;
+        }
+
+        .chatbox .chat p.error {
+            color: #721c24;
+            background: #f8d7da;
+        }
+
+        .chatbox .incoming p {
+            color: #000;
+            background: #f2f2f2;
+        }
+
+        .chatbot .chat-input {
+            display: flex;
+            gap: 5px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #fff;
+            padding: 3px 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-input textarea {
+            height: 55px;
+            width: 100%;
+            border: none;
+            outline: none;
+            resize: none;
+            max-height: 180px;
+            padding: 15px 15px 15px 0;
+            font-size: 0.95rem;
+        }
+
+        .chat-input span {
+            align-self: flex-end;
+            color: #724ae8;
+            cursor: pointer;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            visibility: hidden;
+            font-size: 1.35rem;
+        }
+
+        .chat-input textarea:valid~span {
+            visibility: visible;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f4f4f4;
+        }
+
+        .chatbot {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .chatbot-icon {
+            display: block;
+            margin: 0 auto 10px;
+            width: 50px;
+            height: 50px;
+            background: url('https://via.placeholder.com/50') no-repeat center center;
+            background-size: contain;
+        }
+
+        .chatbox textarea {
+            width: 100%;
+            height: 50px;
+            resize: none;
+            border: solid #ff0000;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .chatbox button {
+            margin-top: 10px;
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: white;
+            background: #007bff;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+        }
+
+        .chatbox button:hover {
+            background: #0056b3;
+        }
+
+        .chatbox .response {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: #f9f9f9;
+        }
+
+        ul:hover {
+            color: aliceblue
+        }
+
+        a {
+            font-family: 'Courier New', Courier, monospace;
+            text-decoration: none;
+            color: rgb(195, 223, 37);
+            margin-left: 140px;
+            margin-right: 10px;
+
+        }
+
+        a:hover {
+            color: white;
+        }
+
+        #welcome-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100px;
+            margin: 0;
+            font-size: 2rem;
+            background-color: rgb(13, 160, 30);
+            color: white;
+            border-radius: 6px;
+            border: 3px solid darkred;
+            font-weight: bold;
+            font-style: italic;
+        }
+
+        nav#welcome-text a {
+            margin-right: 20px;
+            /* Adds space to the right of each link */
+            text-decoration: none;
+            animation: bounce 2s infinite;
+            /* Optional: Removes underline from links */
+        }
+
+        .card {
+            padding: 23px 12px;
+            margin: 23px 12px;
+            background-color: burlywood;
+            box-shadow: 10px 13px green;
+        }
+
+        .card h2 {
+            text-shadow: 3px 4px rgb(22, 184, 70);
+        }
+
+        .p {
+            font-style: italic;
+        }
+
+        .nav {
+            height: 10vh;
+            background-color: #6ac16d;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        body {
+            font-family: 'Baloo Bhai';
+            margin: 0;
+            padding: 0;
+            background-color: rgb(82, 7, 148);
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: rgb(206, 18, 156);
+            padding: 10px 20px;
+            position: flex;
+            top: 0;
+            z-index: 1000;
+            border-radius: 6px;
+            border-color: dark red;
+        }
+
+        /* Navbar toggle transition */
+        .navbar ul {
+            transition: max-height 0.3s ease-in-out;
+            overflow: hidden;
+            max-height: 0;
+        }
+
+        .navbar ul.active {
+            max-height: 500px;
+            /* Set an approximate max-height */
+        }
+
+        .navbar li {
+            display: flex;
+        }
+
+        .navbar a {
+            color: rgb(36, 146, 47);
+            text-decoration: none;
+            font-size: 18px;
+            padding: 5px 10px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            color: rgb(249, 248, 244);
+        }
+
+        .img-sm {
+            width: 12px;
+        }
+
+        .burger {
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .burger .line {
+            width: 24px;
+            height: 3px;
+            margin: 3px 0;
+        }
+
+
+        .container {
+            margin: 20px auto;
+            padding: 20px;
+            max-width: 80%;
+            background-color: rgb(188 209 242);
+            border-radius: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .form {
+            background-color: blanchedalmond;
+            margin-top: 2px;
+            padding-top: 12px;
+            padding-bottom: 12px;
+            padding-left: 12px;
+            padding-right: 12px;
+            border-radius: 10px;
+        }
+
+        .h1 {
+            font-weight: 'bold';
+            text-align: center;
+            background-color: #6ac16d;
+            color: white;
+            padding: 12px;
+            margin: 12px;
+            border-radius: 11px;
+            border: 3px solid peru;
+        }
+
+        .h2 {
+            background-color: antiquewhite;
+            box-sizing: border-box;
+            box-shadow: inset;
+        }
+
+        .h3 {
+            font-weight: bold;
+
+        }
+
+        .form {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .form-input {
+            display: block;
+            width: 70%;
+            margin: 10px auto;
+            padding: 10px;
+            font-size: 16px;
+            border: solid #ff0000;
+            border-radius: 10px;
+        }
+
+        .text-area {
+            border: 4px solid #ff2323;
+        }
+
+        .btn {
+            border-radius: 4px;
+        }
+
+        .btn-submit {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 8px;
+            border: 2px solid rgb(209, 63, 63);
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: rgb(20, 108, 20);
+        }
+
+        #product-grid {
+            color: #6ac16d;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 10px;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: purple;
+            color: white;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            color: rgb(119, 150, 203);
+        }
+
+        .box {
+            font-size: 72px;
+            text-align: center;
+            background-color: rgb(0, 255, 55);
+            color: aliceblue;
+            display: none;
+            transform: rotateY(45deg);
+        }
+
+        .product-card {
+            background-color: rgb(255, 200, 47);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(209, 79, 79, 0.2);
+        }
+
+
+        .navbar {
+            flex-direction: column;
+        }
+
+        .burger {
+            display: flex;
+        }
+
+        .navbar ul {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .animation-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #dbbfbf;
+            overflow: hidden;
+        }
+
+        .box {
+            width: 100px;
+            height: 100px;
+            background-color: #ff5722;
+            animation: bounce 2s infinite;
+            margin-bottom: 20px;
+        }
+
+        .circle {
+            width: 80px;
+            height: 80px;
+            background-color: #f39121;
+            border-radius: 50%;
+            animation: rotate 3s infinite linear;
+            margin-bottom: 20px;
+            animation-duration: 8s;
+            animation-iteration-count: 1;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @keyframes rotate {
+
+            0%,
+            100% {
+                transform: rotate(0);
+            }
+
+            50% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Navbar styles */
+        nav#welcome-text a {
+            margin-right: 20px;
+            text-decoration: none;
+        }
+
+        nav#welcome-text a:last-child {
+            margin-right: 0;
+        }
+
+        .nav {
+            height: 10vh;
+            background-color: #6ac16d;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        .product-card {
+            background-color: rgb(255, 200, 47);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 16px rgba(209, 79, 79, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: purple;
+            color: white;
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            color: rgb(119, 150, 203);
+        }
+    </style>
+    
+    
+
+    
+        <script src="./The Akasa Avenue_files/script.js.download"></script>
+        <div class="chatbox">
+            <h3>Chat with Bot</h3>
+            <textarea id="userInput" placeholder="Type your message here..."></textarea>
+            <button onclick="sendMessage()">Send</button>
+            <div class="response" id="responseBox"></div>
+        </div>
+        <h1>
+            <nav id="welcome-text">The Akasa Avenue</nav>
+            <div id="bigBazaarAnimation" class="animation-container">
+                <div class="box"></div>
+                <div class="circle"></div>
+                <p>Welcome to The Akasa Avenue!</p>
+            </div>
+            <a href="http://127.0.0.1:5500/Home">Home</a>
+            <a href="http://127.0.0.1:5500/About%20us">About Us</a>
+            <a href="http://127.0.0.1:5500/Services">Services</a>
+            <a href="tel:+3456788765" class="call-button">Contact Us</a>
+            
+        </h1>
+        
+
+    <!-- Code injected by live-server -->
+<script>
+	// <![CDATA[  <-- For SVG support
+	if ('WebSocket' in window) {
+		(function () {
+			function refreshCSS() {
+				var sheets = [].slice.call(document.getElementsByTagName("link"));
+				var head = document.getElementsByTagName("head")[0];
+				for (var i = 0; i < sheets.length; ++i) {
+					var elem = sheets[i];
+					var parent = elem.parentElement || head;
+					parent.removeChild(elem);
+					var rel = elem.rel;
+					if (elem.href && typeof rel != "string" || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+						var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, '');
+						elem.href = url + (url.indexOf('?') >= 0 ? '&' : '?') + '_cacheOverride=' + (new Date().valueOf());
+					}
+					parent.appendChild(elem);
+				}
+			}
+			var protocol = window.location.protocol === 'http:' ? 'ws://' : 'wss://';
+			var address = protocol + window.location.host + window.location.pathname + '/ws';
+			var socket = new WebSocket(address);
+			socket.onmessage = function (msg) {
+				if (msg.data == 'reload') window.location.reload();
+				else if (msg.data == 'refreshcss') refreshCSS();
+			};
+			if (sessionStorage && !sessionStorage.getItem('IsThisFirstTime_Log_From_LiveServer')) {
+				console.log('Live reload enabled.');
+				sessionStorage.setItem('IsThisFirstTime_Log_From_LiveServer', true);
+			}
+		})();
+	}
+	else {
+		console.error('Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.');
+	}
+	// ]]>
+</script>
+
+    
+    <!-- Navbar -->
+    <nav class="navbar">
+        <strong>The Akasa Avenue Terms and Conditions:-</strong>
+        The voucher can be redeemed at any The Akasa Avenue &amp; food Avenue stores across India.
+        This voucher cannot be exchanged for cash or cheque.
+        No duplicate will be issued if this voucher is lost or misplaced.
+        This voucher is valid for one year from the date of issue.
+        Validity of the voucher will not be extended under any circumstances.
+        The holder of this voucher is deemed to be the beneficiary.
+        Any dispute should be referred to the company and the decision of the company shall be final.
+        This voucher has been issued subject to the terms of the company (detailed copy of Terms available on request).
+        This is voucher is not valid at Shop-in-shop.
+        This voucher has to be redeemed in full and partial redemption will not be allowed.
+        Not Valid at Gold Bazaar, Mobiles, Durables &amp; SIS.
+
+        <div class="card" id="card-1">
+            <h2>About Us</h2>
+            <p>Reliance Smart Bazaar, formerly known as The Akasa Avenue,
+                is an Indian retail chain of hypermarkets,
+                discount department stores,
+                and grocery stores. The retail chain was founded by Kishore Biyani under his parent organisation Future
+                Group,
+                [3] which is known for having a significant prominence in Indian retail and fashion sectors.
+                The Akasa Avenue is also the parent chain of Food Court,
+                Fashion at The Akasa Avenue[4] (abbreviated as fbb) and eZone where at locations it houses
+                all under one roof, while it is sister chain of retail
+                outlets like Brand Factory,
+                Home Town, Central, eZone, etc.</p>
+        </div>
+        <div class="card" id="card-2">
+            <h2>Product Validity</h2>
+            <p>The Akasa Avenue is a multi-vendor eCommerce marketplace that connects buyers and sellers online and
+                offers a
+                trusted online shopping experience.
+                Different suppliers/vendors can register themselves on this platform to sell a wide range of products.
+                This is a responsive web platform that supports both peer-to-peer architecture with proper user
+                authentication.</p>
+        </div>
+        <div class="card" id="card-3">
+            <h2>Services</h2>
+            <p> Akasa Avenue is a convenience store that is operated by Akasa Avenue Retailers.
+                These stores are specialists in Fresh vegetables &amp; fresh fruits.
+                Apart from storing fruits &amp; vegetables they also offer grocery products shopping to their customers.
+                Today we will discuss how to get Akasa Avenue Franchise or distributorship in India.
+                As the grocery demand is growing especially in tier 2 &amp; tier 3 cities
+                Akasa Avenue supermarkets or reliance fresh franchises can be a great opportunity.</p>
+        </div>
+        <div class="box" id="box-1"></div>
+        <div class="box" id="box-2"></div>
+        <div class="box" id="box-3"></div>
+        <div class="box" id="box-4"></div>
+        <p>
+            <button>Description:-</button>
+            <strong>
+                </strong></p><p><strong>Akasa Avenue was established in 2006 as a wholly-owned subsidiary of Akasa Industries, with
+                    chairman Mukesh Ambani announcing an investment of up to ₹25,000 crore (US$5.52 billion) for the new
+                    venture at Reliance's 32nd annual general meeting in June 2006.[8]
+                </strong></p><p><strong>
+
+                </strong></p><p><strong>The first set of convenience stores under the name Akasa Avenue were inaugurated in Hyderabad in
+                    November 2006.[9] This was followed by entry into consumer electronics via Reliance Digital,[10]
+                    hypermarkets under Reliance Mart,[11] apparel with Reliance Trends,[12] jewellery via Reliance
+                    Jewels,[13] and footwear through Akasa Avenue Footprint, all in 2007.[14]</strong></p><strong>
+
+                <p>In 2008, Marks &amp; Spencer established a 51:49 joint venture with Akasa Avenue to open a chain of Marks
+                    &amp; Spencer stores in India.[15] In 2011, Akasa Avenue started its wholesale cash and carry chain
+                    called Avenue Market.[16]</p>
+
+                In 2013, the company stopped retailing non-vegetarian food items and shut down its 100-plus Reliance
+                Delight meat and seafood stores, owing to opposition from shareholders, customers and animal rights
+                activists.[17][18] By 2014, it also closed its book and music stores called Akasa TimeOut, and
+                furniture retailer, Akasa Living, in order to focus on value retailing and e-commerce.[19]
+
+                In 2016, Akasa Avenue rebranded its hypermarket and mini-hypermarket format Reliance Mart and
+                Reliance Super under the name Reliance Smart.[20] In April 2016, it launched its online fashion retail
+                platform called AJIO.[21]
+
+                Akasa Avenue largely grew organically until 2019, when it acquired the multinational toy retailer
+                Hamleys.[22] In December 2019, the company soft-launched its online grocery service JioMart, followed by
+                a wide launch in May 2020 amidst the COVID-19 lockdown.[23]
+
+                In August 2020 Akasa Avenue announced its acquisition of Future Group's retail, wholesale, logistics
+                and warehousing business for ₹24,713 crore (US$3.34 billion).[24] However, the deal was called off in
+                April 2022 after a prolonged legal dispute between Future Group and Amazon.[25] Later, Akasa Avenue
+                took over more than 200 of Future Group's Big Bazaar, Central and Brand Factory outlets due to Future
+                Group's non-payment of lease,[26] and reopened them as Smart Bazaar, Centro and Fashion Factory
+                respectively.[27]
+
+                In October 2021, the company partnered with 7-Eleven to franchise the latter's stores in India, opening
+                India's first 7-Eleven in Mumbai.[28] In July 2022, Reliance Retail entered a similar franchising
+                agreement with Gap to bring Gap to India.[29]
+
+                In January 2022, Akasa Avenue invested $200 million in Dunzo for a 25.8% stake.[30]
+
+                In 2022, soft drink brand Campa Cola was acquired by Reliance Industries for ₹22 crores. In March 2023,
+                Akasa Consumer Products (RCPL), the fast-moving consumer goods arm and subsidiary of Akasa Avenue
+                Ventures (RRVL), announced the relaunch of Campa Cola in three flavours at select stores.[31]
+
+                In May 2024, Jio Leasing Services Ltd (JLSL), a subsidiary of Jio Financial Services, announced that it
+                would lease customer premises equipment, devices and telecom equipment worth $4.32 billion from Akasa
+                Avenue
+                Products, and hundreds of branded items could be handpicked and delivered to your home, all at the click
+                of
+                a button? In today's fast-paced world, bigbasket.com, India's pioneering online grocery store, continues
+                to
+                bring a staggering array of over 40,000 products from more than 1,000 brands to the doorsteps of over 10
+                million satisfied customers. From essential household cleaning products to the latest beauty and makeup
+                trends, bigbasket remains your one-stop shop for daily needs.<p>
+
+                    In these times, we've eliminated the stress associated with shopping for daily essentials. You can
+                    now
+                    effortlessly order all your household products and groceries online. Plus, the added convenience of
+                    finding
+                    all your requirements at a single source, coupled with substantial savings, demonstrates that
+                    bigbasket,
+                    India's largest online supermarket, has transformed the way we shop for groceries. Online grocery
+                    shopping
+                    has become second nature. And when it comes to freshness, whether it's fruits and vegetables or
+                    dairy and
+                    meat, we've got you covered! Easily obtain fresh eggs, meat, fish, and more with just a few clicks.
+                </p>
+                <p> We now serve 300+ cities and towns across India and ensure swift delivery times, guaranteeing that
+                    all your
+                    groceries, snacks and branded foods reach you on time.
+                </p>
+
+
+                <p>Slotted Delivery: Choose the most convenient delivery slot to receive your groceries, ranging from
+                    early
+                    morning delivery for early birds to late-night delivery for those on the night shift. bigbasket
+                    caters to
+                    every schedule.</p>
+
+
+                <p>Instant delivery from bbnow: In response to the ever-increasing demand for convenience, bbnow by
+                    bigbasket
+                    offers lightning-fast grocery delivery, ensuring that your essentials are at your doorstep within
+                    15-30
+                    minutes. Our quick delivery service has revolutionized the way you shop for groceries. Choose from
+                    5000+
+                    grocery essentials. bbnow is available only in select cities.</p>
+
+                <p>Whether it's a last-minute dinner party or you simply need something urgently, we've got you covered.
+                    This
+                    service exemplifies our commitment to providing you with not just the widest range of products but
+                    also the
+                    fastest and most efficient shopping experience, making bigbasket.com the go-to destination for all
+                    your
+                    immediate grocery needs.
+                    BigBasket began as a tech startup company, founded in December 2011 by five entrepreneurs who had
+                    survived
+                    the dot-com crash of the early 2000s.
+                    The startup was initially funded by private equity investor Ascent Capital (Bangalore) with a
+                    capital injection
+                    of $10 million.[10]
+                </p><p>
+                    In 2015, Bigbasket acquired the hyperlocal delivery company Delyver to build its last-mile delivery
+                    network.[12]
+                    By mid-2016, BigBasket was operating in eight large Indian cities and had grown to become India's
+                    biggest e-grocer.</p>
+                [10] The company's unique selling point was delivery of fresh produce,
+                based on the purchase of fruit and vegetables from local marketplaces each morning,
+                storage in refrigerated warehouses and a fleet of temperature-controlled trucks to deliver fresh to the
+                door.
+        <p></p>
+        </strong>
+        <p></p>
+        <ul>
+            <li><a href="http://127.0.0.1:5500/AkasaAvenue.html#">Home</a></li>
+            <li><a href="http://127.0.0.1:5500/AkasaAvenue.html#">About Us</a></li>
+            <li><a href="http://127.0.0.1:5500/AkasaAvenue.html#">Contact Us</a></li>
+            <li><a href="http://127.0.0.1:5500/AkasaAvenue.html#">Services</a></li>
+        </ul>
+        <div class="logo">
+            <video class="logo-video" autoplay="" muted="" loop="">
+                <source src="Your paragraph text.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="burger">
+            <div class="line"></div>
+            <div class="line"></div>
+            <div class="line"></div>
+        </div>
+    </nav>
+
+
+    <!-- Header -->
+    <!-- <h1>BigBazaar</h1> -->
+
+    <!-- Form -->
+    <strong>
+        <div class="form">
+            <strong>
+                <input type="text" class="form-input" id="name" placeholder="Enter Your Name">
+                <span class="error-message" id="name-error"></span>
+                <input type="text" class="form-input" id="items" placeholder="Enter Items">
+                <span class="error-message" id="items-error"></span>
+                <input type="number" class="form-input" id="gross" placeholder="Gross Amount">
+                <span class="error-message" id="gross-error"></span>
+                <input type="number" class="form-input" id="discount" placeholder="Discount">
+            </strong>
+            <span class="error-message" id="discount-error"></span>
+            <label>
+                <input type="checkbox" id="purchased"> Purchased
+            </label>
+            <button type="submit" class="btn-submit">Submit</button>
+        </div>
+    </strong>
+
+    <!-- Product Grid -->
+    <h2>Product List</h2>
+    <div id="product-grid">
+        <h2>Paneer -70/-</h2>
+        <h2>Butter-50/-</h2>
+        <h2>Chocolates-100/-</h2>
+        <h2>Milk-135/-</h2>
+        <h2>Bread-35/-</h2>
+        <h2>Candies-5/-</h2>
+        <h2>Ice-Cream-50/-</h2>
+        <h2>Diary milk - Silk -150/-</h2>
+        <h2>5-Star -15/-</h2>
+        <h2>5-star oreo- 90/-</h2>
+        <div class="Purchased"></div>
+        <!-- Dynamic product cards will appear here -->
+
+    </div>
+    
+    
+    <footer>
+        <a href="https://www.akasaavenue.com/">Visit The Akasa Avenue</a><strong>@Terms and Conditions applied</strong> |
+        Copyright
+        © 2027 - All Rights Reserved
+    </footer>
+<!-- Code injected by live-se--></body></html>
